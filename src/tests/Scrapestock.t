@@ -8,11 +8,11 @@ use LWP::Simple;
 
 BEGIN {
     use File::Basename;
-    push @INC, dirname __FILE__;
+    push @INC, dirname (__FILE__).'/../methods';
 }
-use Getstock;
+use Scrapestock;
 
-print "testing Getstock.pm...\n";
+print "testing Scrapestock.pm...\n";
 
 my $request_url;
 
@@ -21,18 +21,19 @@ sub setup {
 }
 
 sub test {
-    is get_stock_prices ('SYMC'), get ($request_url.'SYMC'), "Single Argument";
+    is scrape_stock_prices ('SYMC'),
+        get ($request_url.'SYMC'), "Single Argument";
 
-    is get_stock_prices ('SYMC', 'GOOG', 'MSFT'),
+    is scrape_stock_prices ('SYMC', 'GOOG', 'MSFT'),
         get ($request_url.'SYMC,GOOG,MSFT'), "Multiple Arguments";
 
-    is get_stock_prices ('symc'),
+    is scrape_stock_prices ('symc'),
         get ($request_url.'SYMC'), "Single Argument Lower Case";
 
-    is get_stock_prices ('symc', 'goog', 'msft'),
+    is scrape_stock_prices ('symc', 'goog', 'msft'),
         get ($request_url.'SYMC,GOOG,MSFT'), "Multiple Arguments Lower Case";
 
-    is get_stock_prices ('invalid-ticker'),
+    is scrape_stock_prices ('invalid-ticker'),
         get ($request_url.'invalid-ticker'), "Invalid Argument";
 }
 

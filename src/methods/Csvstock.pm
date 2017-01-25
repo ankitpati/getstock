@@ -5,7 +5,7 @@ use warnings;
 
 use LWP::Simple;
 
-sub get_stock_prices {
+sub csv_stock_prices {
     my $request_url = 'http://download.finance.yahoo.com/d/quotes.csv?f=l1&s=';
     $request_url .= uc "$_," foreach (@_);
 
