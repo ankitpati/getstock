@@ -18,10 +18,14 @@ my $method = shift @ARGV;
 
 eval {
     if ($method eq '-c') {
-        print csv_stock_prices @ARGV;
+        my $stock_prices = csv_stock_prices @ARGV;
+        print $stock_prices;
     }
     elsif ($method eq '-s') {
-        print scrape_stock_prices @ARGV;
+        my $stock_prices = new Scrapestock('http://finance.yahoo.com/quote/',
+            '<span class="Fw\(b\) Fz\(36px\) Mb\(-4px\)" data-reactid="(?:\d+)">(.*?)<\/span>',
+            @ARGV)->scrape_stock_prices();
+        print $stock_prices;
     }
     else {
         die "Usage:\n\tgetstock.pl -<c|s> <ticker>...\n";
