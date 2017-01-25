@@ -11,4 +11,6 @@ die "Usage:\n\tgetstock.pl -s <ticker>...\n"
 my $request_url = 'http://download.finance.yahoo.com/d/quotes.csv?f=l1&s=';
 $request_url .= uc "$_," foreach (@ARGV);
 
-print get($request_url);
+my $stock_prices = get($request_url) or die "Could not contact servers.\n";
+
+print $stock_prices;
