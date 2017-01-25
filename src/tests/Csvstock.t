@@ -22,7 +22,8 @@ sub setup {
 }
 
 sub test {
-    is csv_stock_prices ('SYMC'), get ($request_url.'SYMC'), "Single Argument";
+    is csv_stock_prices ('SYMC'),
+        get ($request_url.'SYMC'), "Single Argument";
 
     is csv_stock_prices ('SYMC', 'GOOG', 'MSFT'),
         get ($request_url.'SYMC,GOOG,MSFT'), "Multiple Arguments";
