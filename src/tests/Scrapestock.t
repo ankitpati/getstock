@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 5;
+use Test::More tests => 6;
 use LWP::Simple;
 
 BEGIN {
@@ -21,6 +21,11 @@ sub setup {
 }
 
 sub test {
+    eval {
+        scrape_stock_prices;
+    };
+    is $@, "Incorrect usage!\n", "No Arguments";
+
     is scrape_stock_prices ('SYMC'),
         get ($request_url.'SYMC'), "Single Argument";
 

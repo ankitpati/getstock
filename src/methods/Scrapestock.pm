@@ -6,6 +6,8 @@ use warnings;
 use LWP::Simple;
 
 sub scrape_stock_prices {
+    die "Incorrect usage!\n" unless (@_);
+
     my $request_url = 'http://finance.yahoo.com/quote/';
     my $stock_prices;
 

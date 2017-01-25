@@ -6,6 +6,8 @@ use warnings;
 use LWP::Simple;
 
 sub csv_stock_prices {
+    die "Incorrect usage!\n" unless (@_);
+
     my $request_url = 'http://download.finance.yahoo.com/d/quotes.csv?f=l1&s=';
     $request_url .= uc "$_," foreach (@_);
 
