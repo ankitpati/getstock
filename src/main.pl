@@ -18,7 +18,9 @@ my $method = shift @ARGV;
 
 eval {
     if ($method eq '-c') {
-        my $stock_prices = csv_stock_prices @ARGV;
+        my $stock_prices = new Csvstock(
+            'http://download.finance.yahoo.com/d/quotes.csv?f=l1&s=',
+            @ARGV)->csv_stock_prices();
         print $stock_prices;
     }
     elsif ($method eq '-s') {

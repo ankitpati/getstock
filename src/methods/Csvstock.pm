@@ -3,13 +3,30 @@
 use strict;
 use warnings;
 
+package Csvstock;
+
 use LWP::Simple;
 
-sub csv_stock_prices {
-    die "Incorrect usage!\n" unless (@_);
+sub new {
+    die "Incorrect usage!\n" if (@_ < 2);
 
-    my $request_url = 'http://download.finance.yahoo.com/d/quotes.csv?f=l1&s=';
-    $request_url .= uc "$_," foreach (@_);
+    my $class = shift;
+    my $self = {
+        request_url => $_[0],
+        tickers => [@_]
+    };
+    shift @{$self->{tickers}};
+
+    return bless $self;
+}
+
+sub csv_stock_prices {
+    die "Incorrect usage!\n" if (@_ != 1);
+
+    my $self = shift;
+
+    my $request_url = $self->{request_url};
+    $request_url .= uc "$_," foreach (@{$self->{tickers}});
 
     my $stock_prices = get $request_url or die "Could not contact servers.\n";
 
