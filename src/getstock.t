@@ -5,6 +5,11 @@ use warnings;
 
 use Test::More tests => 5;
 use LWP::Simple;
+
+BEGIN {
+    use File::Basename;
+    push @INC, dirname __FILE__;
+}
 use Getstock;
 
 print "testing Getstock.pm...\n";
