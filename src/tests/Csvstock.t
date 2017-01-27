@@ -11,7 +11,6 @@ BEGIN {
     push @INC, dirname (__FILE__).'/../methods';
 }
 use Csvstock;
-use Scrapestock;
 
 print "testing Csvstock.pm...\n";
 
