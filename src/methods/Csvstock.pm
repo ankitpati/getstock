@@ -15,7 +15,7 @@ sub new {
         request_url => $_[0]
     };
 
-    return bless $self;
+    bless $self;
 }
 
 sub csv_stock_prices {
@@ -27,9 +27,7 @@ sub csv_stock_prices {
     my $request_url = $self->{request_url};
     $request_url .= uc "$_," foreach (@tickers);
 
-    my $stock_prices = get $request_url or die "Could not contact servers.\n";
-
-    return $stock_prices;
+    get $request_url or die "Could not contact servers.\n";
 }
 
 1;

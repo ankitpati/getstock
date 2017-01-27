@@ -16,7 +16,7 @@ sub new {
         pattern => $_[1],
     };
 
-    return bless $self;
+    bless $self;
 }
 
 sub scrape_stock_prices {
@@ -38,7 +38,7 @@ sub scrape_stock_prices {
         $stock_prices .= $price ? "$price\n" : "N/A\n";
     }
 
-    return $stock_prices;
+    $stock_prices;
 }
 
 1;
