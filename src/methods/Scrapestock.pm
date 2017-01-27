@@ -28,9 +28,13 @@ sub scrape_stock_prices {
     my $stock_prices;
 
     foreach (@tickers) {
-        my $webpage =
-            get $self->{request_url}.uc or die "Could not contact servers.\n";
-        my ($price) = ($webpage =~ $self->{pattern});
+        my $price;
+        $_ = uc;
+        if (/^(?:[A-Z]{2,4}:(?![A-Z\d]+\.))?(?:[A-Z]{1,4}|\d{1,3}(?=\.)|\d{4,})(?:\.[A-Z]{2})?$/) {
+            my $webpage = get $self->{request_url}.$_
+                                        or die "Could not contact servers.\n";
+            ($price) = ($webpage =~ $self->{pattern});
+        }
         $stock_prices .= $price ? "$price\n" : "N/A\n";
     }
 
