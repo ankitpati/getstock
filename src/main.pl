@@ -19,14 +19,14 @@ my $method = shift @ARGV;
 eval {
     if ($method eq '-c') {
         my $stock_prices = new Csvstock(
-            'http://download.finance.yahoo.com/d/quotes.csv?f=l1&s=',
-            @ARGV)->csv_stock_prices;
+            'http://download.finance.yahoo.com/d/quotes.csv?f=l1&s=')
+            ->csv_stock_prices (@ARGV);
         print $stock_prices;
     }
     elsif ($method eq '-s') {
         my $stock_prices = new Scrapestock('http://finance.yahoo.com/quote/',
-            '<span class="Fw\(b\) Fz\(36px\) Mb\(-4px\)" data-reactid="(?:\d+)">(.*?)<\/span>',
-            @ARGV)->scrape_stock_prices;
+            '<span class="Fw\(b\) Fz\(36px\) Mb\(-4px\)" data-reactid="(?:\d+)">(.*?)<\/span>')
+            ->scrape_stock_prices (@ARGV);
         print $stock_prices;
     }
     else {
