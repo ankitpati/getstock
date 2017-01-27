@@ -3,6 +3,49 @@
 use strict;
 use warnings;
 
+my $lwp_simple;
+my $test_url;
+
+BEGIN {
+    use Test::MockModule;
+
+    my $request_url = qr/http:\/\/finance\.yahoo\.com\/quote\//;
+    my $response_span = '<span class="Fw(b) Fz(36px) Mb(-4px)" data-reactid="000">';
+
+    local *lwp_simple_get = sub ($) {
+        if ($_[0] =~ /$request_url/) {
+            my $ticker = $_[0] =~ s/$request_url//r;
+
+            my $ascii_sum;
+            $ascii_sum += ord foreach (split //, $ticker);
+
+            $response_span.$ascii_sum.'</span>';
+        }
+        else {
+            my $tickers = $_[0] =~ s/http:\/\/download\.finance\.yahoo\.com\/d\/quotes.csv\?f=l1&s=//r;
+            my @tickers = split /,/, $tickers;
+
+            my $stock_prices;
+
+            foreach (@tickers) {
+                if (/^(?:[A-Z]{2,4}:(?![A-Z\d]+\.))?(?:[A-Z]{1,4}|\d{1,3}(?=\.)|\d{4,})(?:\.[A-Z]{2})?$/) {
+                    my $ascii_sum;
+                    $ascii_sum += ord foreach (split //);
+                    $stock_prices .= "$ascii_sum\n";
+                }
+                else {
+                    $stock_prices .= "N/A\n";
+                }
+            }
+
+            $stock_prices ? $stock_prices : "\n";
+        }
+    };
+
+    $lwp_simple = Test::MockModule->new('LWP::Simple');
+    $lwp_simple->mock(get => \&lwp_simple_get);
+}
+
 use Test::More tests => 6;
 use LWP::Simple;
 
@@ -14,10 +57,8 @@ use Scrapestock;
 
 print "testing Scrapestock.pm...\n";
 
-my $request_url;
-
 sub setup {
-    $request_url = 'http://download.finance.yahoo.com/d/quotes.csv?f=l1&s=';
+    $test_url = 'http://download.finance.yahoo.com/d/quotes.csv?f=l1&s=';
 }
 
 sub test {
@@ -30,23 +71,24 @@ sub test {
         '<span class="Fw\(b\) Fz\(36px\) Mb\(-4px\)" data-reactid="(?:\d+)">(.*?)<\/span>');
 
     is $scrape_instance->scrape_stock_prices ('SYMC'),
-        get ($request_url.'SYMC'), "Single Argument";
+        get ($test_url.'SYMC'), "Single Argument";
 
     is $scrape_instance->scrape_stock_prices ('SYMC', 'GOOG', 'MSFT'),
-        get ($request_url.'SYMC,GOOG,MSFT'), "Multiple Arguments";
+        get ($test_url.'SYMC,GOOG,MSFT'), "Multiple Arguments";
 
     is $scrape_instance->scrape_stock_prices ('symc'),
-        get ($request_url.'SYMC'), "Single Argument Lower Case";
+        get ($test_url.'SYMC'), "Single Argument Lower Case";
 
     is $scrape_instance->scrape_stock_prices ('symc', 'goog', 'msft'),
-        get ($request_url.'SYMC,GOOG,MSFT'), "Multiple Arguments Lower Case";
+        get ($test_url.'SYMC,GOOG,MSFT'), "Multiple Arguments Lower Case";
 
     is $scrape_instance->scrape_stock_prices ('invalid-ticker'),
-        get ($request_url.'invalid-ticker'), "Invalid Argument";
+        get ($test_url.'invalid-ticker'), "Invalid Argument";
 }
 
 sub teardown {
-    undef $request_url;
+    undef $lwp_simple;
+    undef $test_url;
 }
 
 setup;
