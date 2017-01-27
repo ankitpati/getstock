@@ -3,6 +3,38 @@
 use strict;
 use warnings;
 
+my $lwp_simple;
+my $test_url;
+
+BEGIN {
+    use Test::MockModule;
+
+    my $request_url = qr/http:\/\/download\.finance\.yahoo\.com\/d\/quotes.csv\?f=l1&s=/;
+
+    local *lwp_simple_get = sub ($) {
+        my $tickers = $_[0] =~ s/$request_url//r;
+        my @tickers = split /,/, $tickers;
+
+        my $stock_prices;
+
+        foreach (@tickers) {
+            if (/^(?:[A-Z]{2,4}:(?![A-Z\d]+\.))?(?:[A-Z]{1,4}|\d{1,3}(?=\.)|\d{4,})(?:\.[A-Z]{2})?$/) {
+                my $ascii_sum;
+                $ascii_sum += ord foreach (split //);
+                $stock_prices .= "$ascii_sum\n";
+            }
+            else {
+                $stock_prices .= "N/A\n";
+            }
+        }
+
+        $stock_prices ? $stock_prices : "\n";
+    };
+
+    $lwp_simple = Test::MockModule->new('LWP::Simple');
+    $lwp_simple->mock(get => \&lwp_simple_get);
+}
+
 use Test::More tests => 6;
 use LWP::Simple;
 
@@ -14,10 +46,8 @@ use Csvstock;
 
 print "testing Csvstock.pm...\n";
 
-my $request_url;
-
 sub setup {
-    $request_url = 'http://download.finance.yahoo.com/d/quotes.csv?f=l1&s=';
+    $test_url = 'http://download.finance.yahoo.com/d/quotes.csv?f=l1&s=';
 }
 
 sub test {
@@ -30,23 +60,24 @@ sub test {
                     'http://download.finance.yahoo.com/d/quotes.csv?f=l1&s=');
 
     is $csv_instance->csv_stock_prices ('SYMC'),
-        get ($request_url.'SYMC'), "Single Argument";
+        get ($test_url.'SYMC'), "Single Argument";
 
     is $csv_instance->csv_stock_prices ('SYMC', 'GOOG', 'MSFT'),
-        get ($request_url.'SYMC,GOOG,MSFT'), "Multiple Arguments";
+        get ($test_url.'SYMC,GOOG,MSFT'), "Multiple Arguments";
 
     is $csv_instance->csv_stock_prices ('symc'),
-        get ($request_url.'SYMC'), "Single Argument Lower Case";
+        get ($test_url.'SYMC'), "Single Argument Lower Case";
 
     is $csv_instance->csv_stock_prices ('symc', 'goog', 'msft'),
-        get ($request_url.'SYMC,GOOG,MSFT'), "Multiple Arguments Lower Case";
+        get ($test_url.'SYMC,GOOG,MSFT'), "Multiple Arguments Lower Case";
 
     is $csv_instance->csv_stock_prices ('invalid-ticker'),
-        get ($request_url.'invalid-ticker'), "Invalid Argument";
+        get ($test_url.'invalid-ticker'), "Invalid Argument";
 }
 
 sub teardown {
-    undef $request_url;
+    undef $lwp_simple;
+    undef $test_url;
 }
 
 setup;
