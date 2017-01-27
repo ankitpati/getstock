@@ -22,23 +22,26 @@ sub setup {
 
 sub test {
     eval {
-        scrape_stock_prices;
+        new Scrapestock;
     };
     is $@, "Incorrect usage!\n", "No Arguments";
 
-    is scrape_stock_prices ('SYMC'),
+    my $scrape_instance = new Scrapestock('http://finance.yahoo.com/quote/',
+        '<span class="Fw\(b\) Fz\(36px\) Mb\(-4px\)" data-reactid="(?:\d+)">(.*?)<\/span>');
+
+    is $scrape_instance->scrape_stock_prices ('SYMC'),
         get ($request_url.'SYMC'), "Single Argument";
 
-    is scrape_stock_prices ('SYMC', 'GOOG', 'MSFT'),
+    is $scrape_instance->scrape_stock_prices ('SYMC', 'GOOG', 'MSFT'),
         get ($request_url.'SYMC,GOOG,MSFT'), "Multiple Arguments";
 
-    is scrape_stock_prices ('symc'),
+    is $scrape_instance->scrape_stock_prices ('symc'),
         get ($request_url.'SYMC'), "Single Argument Lower Case";
 
-    is scrape_stock_prices ('symc', 'goog', 'msft'),
+    is $scrape_instance->scrape_stock_prices ('symc', 'goog', 'msft'),
         get ($request_url.'SYMC,GOOG,MSFT'), "Multiple Arguments Lower Case";
 
-    is scrape_stock_prices ('invalid-ticker'),
+    is $scrape_instance->scrape_stock_prices ('invalid-ticker'),
         get ($request_url.'invalid-ticker'), "Invalid Argument";
 }
 

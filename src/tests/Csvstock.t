@@ -22,23 +22,26 @@ sub setup {
 
 sub test {
     eval {
-        csv_stock_prices;
+        new Csvstock;
     };
     is $@, "Incorrect usage!\n", "No Arguments";
 
-    is csv_stock_prices ('SYMC'),
+    my $csv_instance = new Csvstock(
+                    'http://download.finance.yahoo.com/d/quotes.csv?f=l1&s=');
+
+    is $csv_instance->csv_stock_prices ('SYMC'),
         get ($request_url.'SYMC'), "Single Argument";
 
-    is csv_stock_prices ('SYMC', 'GOOG', 'MSFT'),
+    is $csv_instance->csv_stock_prices ('SYMC', 'GOOG', 'MSFT'),
         get ($request_url.'SYMC,GOOG,MSFT'), "Multiple Arguments";
 
-    is csv_stock_prices ('symc'),
+    is $csv_instance->csv_stock_prices ('symc'),
         get ($request_url.'SYMC'), "Single Argument Lower Case";
 
-    is csv_stock_prices ('symc', 'goog', 'msft'),
+    is $csv_instance->csv_stock_prices ('symc', 'goog', 'msft'),
         get ($request_url.'SYMC,GOOG,MSFT'), "Multiple Arguments Lower Case";
 
-    is csv_stock_prices ('invalid-ticker'),
+    is $csv_instance->csv_stock_prices ('invalid-ticker'),
         get ($request_url.'invalid-ticker'), "Invalid Argument";
 }
 
