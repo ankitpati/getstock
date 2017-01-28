@@ -18,11 +18,16 @@ BEGIN {
         my $stock_prices;
 
         foreach (@tickers) {
-            if (/^(?:[A-Z]{2,4}:(?![A-Z\d]+\.))?(?:[A-Z]{1,4}|\d{1,3}(?=\.)|\d{4,})(?:\.[A-Z]{2})?$/) {
+            if ($_ eq 'DONT') {
+                return undef;
+            }
+
+            elsif (/^(?:[A-Z]{2,4}:(?![A-Z\d]+\.))?(?:[A-Z]{1,4}|\d{1,3}(?=\.)|\d{4,})(?:\.[A-Z]{2})?$/) {
                 my $ascii_sum;
                 $ascii_sum += ord foreach (split //);
                 $stock_prices .= "$ascii_sum\n";
             }
+
             else {
                 $stock_prices .= "N/A\n";
             }
@@ -35,7 +40,7 @@ BEGIN {
     $lwp_simple->mock(get => \&lwp_simple_get);
 }
 
-use Test::More tests => 6;
+use Test::More tests => 7;
 use LWP::Simple;
 
 BEGIN {
@@ -73,6 +78,11 @@ sub test {
 
     is $csv_instance->csv_stock_prices ('invalid-ticker'),
         get ($test_url.'invalid-ticker'), "Invalid Argument";
+
+    eval {
+        $csv_instance->csv_stock_prices ('DONT');
+    };
+    is $@, "Could not contact servers.\n", "Connection Error";
 }
 
 sub teardown {

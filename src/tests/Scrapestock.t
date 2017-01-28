@@ -16,6 +16,10 @@ BEGIN {
         if ($_[0] =~ /$request_url/) {
             my $ticker = $_[0] =~ s/$request_url//r;
 
+            if ($ticker eq 'DONT') {
+                return undef;
+            }
+
             my $ascii_sum;
             $ascii_sum += ord foreach (split //, $ticker);
 
@@ -28,7 +32,11 @@ BEGIN {
             my $stock_prices;
 
             foreach (@tickers) {
-                if (/^(?:[A-Z]{2,4}:(?![A-Z\d]+\.))?(?:[A-Z]{1,4}|\d{1,3}(?=\.)|\d{4,})(?:\.[A-Z]{2})?$/) {
+                if ($_ eq 'DONT') {
+                    return undef;
+                }
+
+                elsif (/^(?:[A-Z]{2,4}:(?![A-Z\d]+\.))?(?:[A-Z]{1,4}|\d{1,3}(?=\.)|\d{4,})(?:\.[A-Z]{2})?$/) {
                     my $ascii_sum;
                     $ascii_sum += ord foreach (split //);
                     $stock_prices .= "$ascii_sum\n";
@@ -46,7 +54,7 @@ BEGIN {
     $lwp_simple->mock(get => \&lwp_simple_get);
 }
 
-use Test::More tests => 6;
+use Test::More tests => 7;
 use LWP::Simple;
 
 BEGIN {
@@ -84,6 +92,11 @@ sub test {
 
     is $scrape_instance->scrape_stock_prices ('invalid-ticker'),
         get ($test_url.'invalid-ticker'), "Invalid Argument";
+
+    eval {
+        $scrape_instance->scrape_stock_prices ('DONT');
+    };
+    is $@, "Could not contact servers.\n", "Connection Error";
 }
 
 sub teardown {
