@@ -3,8 +3,6 @@
 use strict;
 use warnings;
 
-use LWP::Simple;
-
 BEGIN {
     use File::Basename;
     push @INC, dirname (__FILE__).'/methods';
