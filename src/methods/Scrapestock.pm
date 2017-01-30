@@ -13,7 +13,7 @@ sub new {
     my $class = shift;
     my $self = {
         request_url => $_[0],
-        pattern => $_[1],
+        pattern => $_[1]
     };
 
     bless $self;
