@@ -24,7 +24,7 @@ eval {
         print $stock_prices;
     }
     elsif ($method eq '-s') {
-        my $stock_prices = new Scrapestock('http://finance.yahoo.com/quote/',
+        my $stock_prices = new Scrapestock('https://finance.yahoo.com/quote/',
             '<span class="Fw\(b\) Fz\(36px\) Mb\(-4px\)" data-reactid="(?:\d+)">(.*?)<\/span>')
             ->scrape_stock_prices (@ARGV);
         print $stock_prices;
