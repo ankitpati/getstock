@@ -9,7 +9,7 @@ my $test_url;
 BEGIN {
     use Test::MockModule;
 
-    my $request_url = qr/http:\/\/finance\.yahoo\.com\/quote\//;
+    my $request_url = qr/https?:\/\/finance\.yahoo\.com\/quote\//;
     my $response_span = '<span class="Fw(b) Fz(36px) Mb(-4px)" data-reactid="000">';
 
     local *lwp_simple_get = sub ($) {
@@ -26,7 +26,7 @@ BEGIN {
             $response_span.$ascii_sum.'</span>';
         }
         else {
-            my $tickers = $_[0] =~ s/http:\/\/download\.finance\.yahoo\.com\/d\/quotes.csv\?f=l1&s=//r;
+            my $tickers = $_[0] =~ s/https?:\/\/download\.finance\.yahoo\.com\/d\/quotes.csv\?f=l1&s=//r;
             my @tickers = split /,/, $tickers;
 
             my $stock_prices;
@@ -75,7 +75,7 @@ sub test {
     };
     is $@, "Incorrect usage!\n", "No Arguments";
 
-    my $scrape_instance = new Scrapestock('http://finance.yahoo.com/quote/',
+    my $scrape_instance = new Scrapestock('https://finance.yahoo.com/quote/',
         '<span class="Fw\(b\) Fz\(36px\) Mb\(-4px\)" data-reactid="(?:\d+)">(.*?)<\/span>');
 
     is $scrape_instance->scrape_stock_prices ('SYMC'),

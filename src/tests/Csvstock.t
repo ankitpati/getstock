@@ -9,7 +9,7 @@ my $test_url;
 BEGIN {
     use Test::MockModule;
 
-    my $request_url = qr/http:\/\/download\.finance\.yahoo\.com\/d\/quotes.csv\?f=l1&s=/;
+    my $request_url = qr/https?:\/\/download\.finance\.yahoo\.com\/d\/quotes.csv\?f=l1&s=/;
 
     local *lwp_simple_get = sub ($) {
         my $tickers = $_[0] =~ s/$request_url//r;
