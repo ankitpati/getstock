@@ -10,7 +10,9 @@ BEGIN {
 use Csvstock;
 use Scrapestock;
 
-die "Usage:\n\tgetstock.pl -<c|s> <ticker>...\n" if (@ARGV <= 1);
+my $usage = "Usage:\n\tgetstock.pl -<c|s> <ticker>...";
+
+die "$usage\n" if (@ARGV <= 1);
 
 my $method = shift @ARGV;
 
@@ -28,6 +30,6 @@ eval {
         print $stock_prices;
     }
     else {
-        die "Usage:\n\tgetstock.pl -<c|s> <ticker>...\n";
+        die "$usage\n";
     }
 } or die "$@\n";
