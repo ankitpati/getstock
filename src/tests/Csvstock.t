@@ -4,15 +4,16 @@ use strict;
 use warnings;
 
 my $lwp_simple;
+
 my $test_url;
 
 BEGIN {
     use Test::MockModule;
 
-    my $request_url = qr/https?:\/\/download\.finance\.yahoo\.com\/d\/quotes.csv\?f=l1&s=/;
+    $test_url = 'fake://example.org/endpoint?';
 
     local *lwp_simple_get = sub ($) {
-        my $tickers = $_[0] =~ s/$request_url//r;
+        my $tickers = $_[0] =~ s/\Q$test_url\E//r;
         my @tickers = split /,/, $tickers;
 
         my $stock_prices;
@@ -40,7 +41,7 @@ BEGIN {
     $lwp_simple->mock(get => \&lwp_simple_get);
 }
 
-use Test::More tests => 7;
+use Test::More tests => 8;
 use LWP::Simple;
 
 BEGIN {
@@ -51,18 +52,15 @@ use Csvstock;
 
 print "testing Csvstock.pm...\n";
 
-sub setup {
-    $test_url = 'http://download.finance.yahoo.com/d/quotes.csv?f=l1&s=';
-}
-
 sub test {
     eval {
         new Csvstock;
     };
     is $@, "Incorrect usage!\n", "No Arguments";
 
-    my $csv_instance = new Csvstock(
-                    'http://download.finance.yahoo.com/d/quotes.csv?f=l1&s=');
+    my $csv_instance = new Csvstock($test_url);
+
+    is $csv_instance->{request_url}, $test_url, "Test URL";
 
     is $csv_instance->csv_stock_prices ('SYMC'),
         get ($test_url.'SYMC'), "Single Argument";
@@ -90,6 +88,5 @@ sub teardown {
     undef $test_url;
 }
 
-setup;
 test;
 teardown;
