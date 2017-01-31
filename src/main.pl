@@ -9,8 +9,9 @@ BEGIN {
 }
 use Csvstock;
 use Scrapestock;
+use Parsestock;
 
-my $usage = "Usage:\n\tgetstock.pl -<c|s> <ticker>...";
+my $usage = "Usage:\n\tgetstock.pl -<c|s|p> <ticker>...";
 
 die "$usage\n" if (@ARGV <= 1);
 
@@ -28,6 +29,10 @@ eval {
         $stock_prices = new Scrapestock('https://finance.yahoo.com/quote/',
             '<span class="Fw\(b\) Fz\(36px\) Mb\(-4px\)" data-reactid="(?:\d+)">(.*?)<\/span>')
             ->scrape_stock_prices (@ARGV);
+    }
+    elsif ($method eq '-p') {
+        $stock_prices = new Parsestock('https://finance.yahoo.com/quote/')
+            ->parse_stock_prices (@ARGV);
     }
     else {
         die "$usage\n";
