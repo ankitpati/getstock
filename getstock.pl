@@ -3,4 +3,4 @@
 use strict;
 use warnings;
 
-exec "./src/main.pl", @ARGV
+exec './src/main.pl', @ARGV

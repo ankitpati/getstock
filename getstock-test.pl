@@ -3,4 +3,4 @@
 use strict;
 use warnings;
 
-exec "prove", "-v", "./src/t";
+exec 'prove', '-v', './src/t';
