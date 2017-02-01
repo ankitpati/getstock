@@ -3,6 +3,4 @@
 use strict;
 use warnings;
 
-use File::Basename;
-
-system $_ foreach (glob dirname (__FILE__).'/src/t/*.t');
+exec "prove", "-v", "./src/t";
