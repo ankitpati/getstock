@@ -5,4 +5,4 @@ use warnings;
 
 use File::Basename;
 
-system $_ foreach (glob dirname (__FILE__).'/src/tests/*.t');
+system $_ foreach (glob dirname (__FILE__).'/src/t/*.t');
