@@ -27,7 +27,7 @@ eval {
     }
     elsif ($method eq '-s') {
         $stock_prices = new Scrapestock('https://finance.yahoo.com/quote/',
-            '<span class="Fw\(b\) Fz\(36px\) Mb\(-4px\)" data-reactid="(?:\d+)">(.*?)<\/span>')
+            qr|<span class=".*? Fw\(b\) Fz\(36px\) Mb\(-4px\) .*?" data-reactid="\d+">([^<]*?)</span>|)
             ->scrape_stock_prices (@ARGV);
     }
     elsif ($method eq '-p') {

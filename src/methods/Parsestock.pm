@@ -40,7 +40,7 @@ sub parse_stock_prices {
 
             my $price_span = $root->look_down (
                 _tag => 'span',
-                class => 'Fw(b) Fz(36px) Mb(-4px)',
+                class => qr/.*? Fw\(b\) Fz\(36px\) Mb\(-4px\) .*?/,
                 'data-reactid' => qr/\d+/
             );
 
